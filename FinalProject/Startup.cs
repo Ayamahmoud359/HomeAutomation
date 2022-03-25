@@ -36,7 +36,9 @@ namespace FinalProject
             //    services.AddIdentity<IdentityUser, IdentityRole>()
             //.AddEntityFrameworkStores<ApplicationDbContext>();
 
-            services.AddIdentity<IdentityUser, IdentityRole>()
+            services.AddIdentity<IdentityUser, IdentityRole>(options=> {
+                options.SignIn.RequireConfirmedEmail = true;
+            })
                 .AddEntityFrameworkStores<ApplicationDbContext>();
             services.AddMvc(config => {
                 var policy = new AuthorizationPolicyBuilder()
