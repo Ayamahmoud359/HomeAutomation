@@ -33,10 +33,10 @@ namespace FinalProject
                 options.UseSqlServer(
                     Configuration.GetConnectionString("DefaultConnection")));
             services.AddDatabaseDeveloperPageExceptionFilter();
-        //    services.AddIdentity<IdentityUser, IdentityRole>()
-        //.AddEntityFrameworkStores<ApplicationDbContext>();
+            //    services.AddIdentity<IdentityUser, IdentityRole>()
+            //.AddEntityFrameworkStores<ApplicationDbContext>();
 
-            services.AddIdentity<IdentityUser,IdentityRole > ()
+            services.AddIdentity<IdentityUser, IdentityRole>()
                 .AddEntityFrameworkStores<ApplicationDbContext>();
             services.AddMvc(config => {
                 var policy = new AuthorizationPolicyBuilder()
@@ -48,16 +48,23 @@ namespace FinalProject
             {
                 options.ClientId = "259290704760-diinpb7bb4orgde5sou2gp5g3nulcgbk.apps.googleusercontent.com";
                 options.ClientSecret = "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";
-            });
-            services.AddAuthorization(options =>
-            {
-                options.AddPolicy("DeleteRolePolicy",
-                    policy => policy.RequireClaim("Delete Role")
-                                    .RequireClaim("Create Role")
-                    );
-            });
-            services.AddControllersWithViews();
-        }
+            })
+                .AddFacebook(options =>
+                {
+                    options.AppId = "703844814106160";
+                    options.AppSecret = "379a54928d5ce242de1ea9531d2da643";
+                });
+        
+        services.AddAuthorization(options =>
+                    {
+                        options.AddPolicy("DeleteRolePolicy",
+                            policy => policy.RequireClaim("Delete Role")
+                                            .RequireClaim("Create Role")
+                            );
+                    });
+                    services.AddControllersWithViews();
+                }
+        
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
