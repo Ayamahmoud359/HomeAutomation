@@ -30,11 +30,6 @@ namespace FinalProject.Controllers
             return View();
         }
 
-        public IActionResult aaaa()
-        {
-            return View();
-        }
-
         [HttpPost]
         [AllowAnonymous]
 
