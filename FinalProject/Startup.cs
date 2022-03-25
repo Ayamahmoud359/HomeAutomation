@@ -39,7 +39,8 @@ namespace FinalProject
             services.AddIdentity<IdentityUser, IdentityRole>(options=> {
                 options.SignIn.RequireConfirmedEmail = true;
             })
-                .AddEntityFrameworkStores<ApplicationDbContext>();
+                .AddEntityFrameworkStores<ApplicationDbContext>()
+                    .AddDefaultTokenProviders();
             services.AddMvc(config => {
                 var policy = new AuthorizationPolicyBuilder()
                                 .RequireAuthenticatedUser()
