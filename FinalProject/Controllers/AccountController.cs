@@ -32,36 +32,36 @@ namespace FinalProject.Controllers
         {
             return View();
         }
-
         [HttpPost]
-        [AllowAnonymous]
-        public async Task<IActionResult> ConfirmEmail(string userId, string token)
-        {
-            if (userId == null || token == null)
-            {
-                return RedirectToAction("index", "home");
-            }
+        //[AllowAnonymous]
+        //public async Task<IActionResult> ConfirmEmail(string userId, string token)
+        //{
+        //    if (userId == null || token == null)
+        //    {
+        //        return RedirectToAction("index", "home");
+        //    }
 
-            var user = await userManager.FindByIdAsync(userId);
-            if (user == null)
-            {
-                ViewBag.ErrorMessage = $"The User ID {userId} is invalid";
-                return View("NotFound");
-            }
+        //    var user = await userManager.FindByIdAsync(userId);
+        //    if (user == null)
+        //    {
+        //        ViewBag.ErrorMessage = $"The User ID {userId} is invalid";
+        //        return View("NotFound");
+        //    }
 
-            var result = await userManager.ConfirmEmailAsync(user, token);
-            if (result.Succeeded)
-            {
-                return View();
-            }
+        //    var result = await userManager.ConfirmEmailAsync(user, token);
+        //    if (result.Succeeded)
+        //    {
+        //        return View();
+        //    }
 
-            ViewBag.ErrorTitle = "Email cannot be confirmed";
-            return View("Error");
-        }
+        //    ViewBag.ErrorTitle = "Email cannot be confirmed";
+        //    return View("Error");
+        //}
 
-        // rest of the code
+        //// rest of the code
+        
     
-    [HttpPost]
+          [HttpPost]
         [AllowAnonymous]
         public async Task<IActionResult> Register(RegisterViewModel model)
         {
@@ -81,9 +81,10 @@ namespace FinalProject.Controllers
                 // SignInManager and redirect to index action of HomeController
                 if (result.Succeeded)
                 {
-                    var token = await userManager.GenerateEmailConfirmationTokenAsync(user);
-                    var confirmationLink = Url.Action("ConfirmEmail", "Account",new { userId = user.Id, token = token }, Request.Scheme);
-                    logger.Log(LogLevel.Warning, confirmationLink);
+                    
+                    //var token = await userManager.GenerateEmailConfirmationTokenAsync(user);
+                    //var confirmationLink = Url.Action("ConfirmEmail", "Account",new { userId = user.Id, token = token }, Request.Scheme);
+                    //logger.Log(LogLevel.Warning, confirmationLink);
                     // If the user is signed in and in the Admin role, then it is
                     // the Admin user that is creating a new user. So redirect the
                     // Admin user to ListRoles action
@@ -91,11 +92,12 @@ namespace FinalProject.Controllers
                     {
                         return RedirectToAction("ListUsers", "Administration");
                     }
-
-                    ViewBag.ErrorTitle = "Registration successful";
-                    ViewBag.ErrorMessage = "Before you can Login, please confirm your " +
-                            "email, by clicking on the confirmation link we have emailed you";
-                    return View("Error");
+                    await signInManager.SignInAsync(user, isPersistent: false);
+                    return RedirectToAction("index", "home");
+                    //ViewBag.ErrorTitle = "Registration successful";
+                    //ViewBag.ErrorMessage = "Before you can Login, please confirm your " +
+                    //        "email, by clicking on the confirmation link we have emailed you";
+                    //return View("Error");
                 }
                 // If there are any errors, add them to the ModelState object
                 // which will be displayed by the validation summary tag helper
@@ -142,12 +144,12 @@ namespace FinalProject.Controllers
             {
                 var user = await userManager.FindByEmailAsync(model.Email);
 
-                if (user != null && !user.EmailConfirmed &&
-                            (await userManager.CheckPasswordAsync(user, model.Password)))
-                {
-                    ModelState.AddModelError(string.Empty, "Email not confirmed yet");
-                    return View(model);
-                }
+                //if (user != null && !user.EmailConfirmed &&
+                //            (await userManager.CheckPasswordAsync(user, model.Password)))
+                //{
+                //    ModelState.AddModelError(string.Empty, "Email not confirmed yet");
+                //    return View(model);
+                //}
 
                 var result = await signInManager.PasswordSignInAsync(model.Email,
                                         model.Password, model.RememberMe, false);
@@ -186,64 +188,45 @@ namespace FinalProject.Controllers
                 .ConfigureExternalAuthenticationProperties(provider, redirectUrl);
             return new ChallengeResult(provider, properties);
         }
+
         [AllowAnonymous]
-        public async Task<IActionResult>
-    ExternalLoginCallback(string returnUrl = null, string remoteError = null)
+        public async Task<IActionResult> ExternalLoginCallback(string returnUrl = null, string remoteError = null)
         {
             returnUrl = returnUrl ?? Url.Content("~/");
 
             LoginViewModel loginViewModel = new LoginViewModel
             {
                 ReturnUrl = returnUrl,
-                ExternalLogins =
-                (await signInManager.GetExternalAuthenticationSchemesAsync()).ToList()
+                ExternalLogins = (await signInManager.GetExternalAuthenticationSchemesAsync()).ToList()
             };
 
             if (remoteError != null)
             {
-                ModelState.AddModelError(string.Empty,
-                    $"Error from external provider: {remoteError}");
+                ModelState.AddModelError(string.Empty, $"Error from external provider: {remoteError}");
 
                 return View("Login", loginViewModel);
             }
-
             var info = await signInManager.GetExternalLoginInfoAsync();
             if (info == null)
             {
-                ModelState.AddModelError(string.Empty,
-                    "Error loading external login information.");
+                ModelState.AddModelError(string.Empty, "Error loading external login information.");
 
                 return View("Login", loginViewModel);
             }
-
-            // Get the email claim from external login provider (Google, Facebook etc)
-            var email = info.Principal.FindFirstValue(ClaimTypes.Email);
-            IdentityUser user = null;
-
-            if (email != null)
-            {
-                // Find the user
-                user = await userManager.FindByEmailAsync(email);
-
-                // If email is not confirmed, display login view with validation error
-                if (user != null && !user.EmailConfirmed)
-                {
-                    ModelState.AddModelError(string.Empty, "Email not confirmed yet");
-                    return View("Login", loginViewModel);
-                }
-            }
-
             var signInResult = await signInManager.ExternalLoginSignInAsync(info.LoginProvider,
-                info.ProviderKey, isPersistent: false, bypassTwoFactor: true);
-
+             info.ProviderKey, isPersistent: false, bypassTwoFactor: true);
             if (signInResult.Succeeded)
             {
                 return LocalRedirect(returnUrl);
             }
             else
             {
+                var email = info.Principal.FindFirstValue(ClaimTypes.Email);
+
                 if (email != null)
                 {
+                    var user = await userManager.FindByEmailAsync(email);
+
                     if (user == null)
                     {
                         user = new IdentityUser
@@ -265,10 +248,8 @@ namespace FinalProject.Controllers
                 ViewBag.ErrorMessage = "Please contact support on Pragim@PragimTech.com";
 
                 return View("Error");
-
             }
         }
-
 
     }
 }

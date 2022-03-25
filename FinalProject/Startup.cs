@@ -36,9 +36,12 @@ namespace FinalProject
             //    services.AddIdentity<IdentityUser, IdentityRole>()
             //.AddEntityFrameworkStores<ApplicationDbContext>();
 
-            services.AddIdentity<IdentityUser, IdentityRole>(options=> {
-                options.SignIn.RequireConfirmedEmail = true;
-            })
+            services.AddIdentity<IdentityUser, IdentityRole>
+               (options =>
+            {
+            //    options.SignIn.RequireConfirmedEmail = true;
+           }
+            )
                 .AddEntityFrameworkStores<ApplicationDbContext>()
                     .AddDefaultTokenProviders();
             services.AddMvc(config => {
