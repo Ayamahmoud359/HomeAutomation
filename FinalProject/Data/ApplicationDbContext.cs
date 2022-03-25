@@ -22,6 +22,8 @@ namespace FinalProject.Data
                 foreignKey.DeleteBehavior = DeleteBehavior.Restrict;
             }
         }
+        public DbSet<Final_Project1.ViewModel.Products> Products { get; set; }
+
 
     }
 }
