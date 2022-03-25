@@ -44,6 +44,11 @@ namespace FinalProject
                                 .Build();
                 config.Filters.Add(new AuthorizeFilter(policy));
             });
+            services.AddAuthentication().AddGoogle(options =>
+            {
+                options.ClientId = "259290704760-diinpb7bb4orgde5sou2gp5g3nulcgbk.apps.googleusercontent.com";
+                options.ClientSecret = "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";
+            });
             services.AddAuthorization(options =>
             {
                 options.AddPolicy("DeleteRolePolicy",
