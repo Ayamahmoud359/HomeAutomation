@@ -50,6 +50,7 @@ namespace FinalProject
                     policy => policy.RequireClaim("Delete Role")
                                     .RequireClaim("Create Role")
                     );
+
             });
             services.AddControllersWithViews();
         }
