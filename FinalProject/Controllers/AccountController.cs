@@ -230,6 +230,7 @@ namespace FinalProject.Controllers
                 ViewBag.ErrorMessage = "Please contact support on Pragim@PragimTech.com";
 
                 return View("Error");
+
             }
         }
 
