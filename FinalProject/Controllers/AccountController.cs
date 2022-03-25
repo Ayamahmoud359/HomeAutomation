@@ -33,6 +33,7 @@ namespace FinalProject.Controllers
             return View();
         }
 
+        [HttpPost]
         [AllowAnonymous]
         public async Task<IActionResult> ConfirmEmail(string userId, string token)
         {
