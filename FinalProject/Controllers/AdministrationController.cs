@@ -13,7 +13,7 @@ using System.Threading.Tasks;
 
 namespace FinalProject.Controllers
 {
-    [Authorize(Roles = "admin")]
+    //[Authorize(Roles = "admin")]
     public class AdministrationController : Controller
     {
         private readonly RoleManager<IdentityRole> roleManager;
@@ -28,6 +28,14 @@ namespace FinalProject.Controllers
             this.roleManager = roleManager;
             this.userManager = userManager;
             this.logger = logger;
+        }
+        public IActionResult home()
+        {
+            return View();
+        }
+        public IActionResult index()
+        {
+            return View();
         }
         [HttpGet]
         public IActionResult ListUsers()

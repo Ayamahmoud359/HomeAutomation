@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Final_Project1.ViewModel
+namespace FinalProject.ViewModels
 {
     public class productviewmodel
     {

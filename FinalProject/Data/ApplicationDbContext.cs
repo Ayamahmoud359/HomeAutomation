@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+﻿using FinalProject.ViewModels;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -22,8 +23,8 @@ namespace FinalProject.Data
                 foreignKey.DeleteBehavior = DeleteBehavior.Restrict;
             }
         }
-        public DbSet<Final_Project1.ViewModel.Products> Products { get; set; }
-
+        public DbSet<Products> Products { get; set; }
+        public DbSet<Teams> Teams { get; set; }
 
     }
 }

@@ -48,8 +48,10 @@ namespace FinalProject.Controllers
                 // Copy data from RegisterViewModel to IdentityUser
                 var user = new IdentityUser
                 {
-                    UserName = model.Email,
+                    UserName = model.UserName,
                     Email = model.Email
+                    ,PhoneNumber=model.Phone
+                    
                 };
 
                 // Store user data in AspNetUsers database table

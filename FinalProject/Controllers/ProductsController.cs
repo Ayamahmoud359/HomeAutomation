@@ -1,5 +1,4 @@
-﻿using Final_Project1.ViewModel;
-using FinalProject.Data;
+﻿using FinalProject.Data;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
@@ -9,6 +8,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using FinalProject.ViewModels;
 
 namespace FinalProject.Controllers
 {
@@ -61,7 +61,7 @@ namespace FinalProject.Controllers
         {
 
             string stringFileName = UploadFile(vm);
-            var products = new Products { Name = vm.Name, Picture = stringFileName, description = vm.description, price = vm.price };
+            var products = new Products { Name = vm.Name, Picture = stringFileName, Discription = vm.description, price = vm.price };
 
 
 
