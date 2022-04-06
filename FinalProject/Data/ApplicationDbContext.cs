@@ -1,4 +1,5 @@
-﻿using FinalProject.ViewModels;
+﻿using FinalProject.Models;
+using FinalProject.ViewModels;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -25,6 +26,11 @@ namespace FinalProject.Data
         }
         public DbSet<Products> Products { get; set; }
         public DbSet<Teams> Teams { get; set; }
+        public DbSet<ShoppingCartItem> ShoppingcartItems { get; set; }
+        public DbSet<Order> orders { get; set; }
+        public DbSet<OrderDetail> orderDetails { get; set; }
+        public DbSet<Review> Reviews { get; set; }
+        public DbSet<FinalProject.ViewModels.ContactUs> ContactUs { get; set; }
 
     }
 }

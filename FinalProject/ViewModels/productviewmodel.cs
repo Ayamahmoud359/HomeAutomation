@@ -10,8 +10,8 @@ namespace FinalProject.ViewModels
     {
         public string Name { get; set; }
         public double price { get; set; }
-        public string description { get; set; }
-
+        public string Discription { get; set; }
+        public string Details { get; set; }
         public IFormFile Picture { get; set; }
     }
 }

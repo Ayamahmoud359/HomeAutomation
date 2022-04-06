@@ -1,4 +1,5 @@
 using FinalProject.Data;
+using FinalProject.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -50,6 +51,11 @@ namespace FinalProject
                                 .Build();
                 config.Filters.Add(new AuthorizeFilter(policy));
             });
+            services.AddScoped<IProductRepository, ProductRepository>();
+            services.AddScoped<ShoppingCart>(sc => ShoppingCart.GetCart(sc));
+            services.AddScoped<IOrderRepository, OrderRepository>();
+            services.AddSession();
+            services.AddHttpContextAccessor();
             services.AddAuthentication().AddGoogle(options =>
             {
                 options.ClientId = "259290704760-diinpb7bb4orgde5sou2gp5g3nulcgbk.apps.googleusercontent.com";
@@ -88,9 +94,8 @@ namespace FinalProject
             }
             app.UseHttpsRedirection();
             app.UseStaticFiles();
-
+            app.UseSession();
             app.UseRouting();
-
             app.UseAuthentication();
             app.UseAuthorization();
 

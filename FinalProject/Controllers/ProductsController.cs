@@ -9,6 +9,7 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using FinalProject.ViewModels;
+using FinalProject.Models;
 
 namespace FinalProject.Controllers
 {
@@ -22,7 +23,7 @@ namespace FinalProject.Controllers
             _context = context;
             this.webHostEnvironment = webHostEnvironment;
         }
-        [AllowAnonymous]
+        [Authorize(Roles ="admin")]
         // GET: Products
         public IActionResult Index()
         {
@@ -30,7 +31,9 @@ namespace FinalProject.Controllers
             return View(items);
         }
 
+
         // GET: Products/Details/5
+        [AllowAnonymous]
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
@@ -38,17 +41,16 @@ namespace FinalProject.Controllers
                 return NotFound();
             }
 
-            var products = await _context.Products
-                .FirstOrDefaultAsync(m => m.id == id);
+            var products = await _context.Products.Include(x => x.Reviews).FirstOrDefaultAsync(m => m.id == id);
             if (products == null)
             {
                 return NotFound();
             }
-
             return View(products);
         }
-
+        
         // GET: Products/Create
+        [Authorize(Roles ="admin")]
         public IActionResult Create()
         {
             return View();
@@ -57,19 +59,22 @@ namespace FinalProject.Controllers
         // POST: Products/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(productviewmodel vm)
+        public async Task<IActionResult> Create([Bind("Name,Discription,Picture,Details,price")] productviewmodel vm)
         {
 
             string stringFileName = UploadFile(vm);
-            var products = new Products { Name = vm.Name, Picture = stringFileName, Discription = vm.description, price = vm.price };
+            var products = new Products { Name = vm.Name, Picture = stringFileName, Discription = vm.Discription,Details=vm.Details, price = vm.price };
 
 
+            if (ModelState.IsValid)
+            {
+                _context.Add(products);
+                await _context.SaveChangesAsync();
+                return RedirectToAction(nameof(Index));
+            }
+           
 
-            _context.Add(products);
-            await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
-
-            //return View(products);
+            return View(products);
         }
 
         private string UploadFile(productviewmodel vm)
@@ -77,7 +82,7 @@ namespace FinalProject.Controllers
             string fileName = null;
             if (vm.Picture != null)
             {
-                string uploadDir = Path.Combine(webHostEnvironment.WebRootPath, "images");
+                string uploadDir = Path.Combine(webHostEnvironment.WebRootPath, "ProductImages");
                 fileName = Guid.NewGuid().ToString() + "-" + vm.Picture.FileName;
                 string filePath = Path.Combine(uploadDir, fileName);
                 using (var fileStream = new FileStream(filePath, FileMode.Create))
@@ -107,12 +112,17 @@ namespace FinalProject.Controllers
         // POST: Products/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("id,Name,price,description")] Products products)
+        public async Task<IActionResult> Edit(int id, [Bind("Name,Discription,Picture,Details,price")] productviewmodel  vm)
         {
-            if (id != products.id)
-            {
-                return NotFound();
-            }
+            //if (id != products.id)
+            //{
+            //    return NotFound();
+            //}
+
+            string stringFileName = UploadFile(vm);
+            var products = new Products {id=id, Name = vm.Name, Picture = stringFileName, Discription = vm.Discription, Details = vm.Details, price = vm.price };
+
+
 
             if (ModelState.IsValid)
             {
@@ -123,14 +133,14 @@ namespace FinalProject.Controllers
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!ProductsExists(products.id))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
+                    //if (!ProductsExists(products.id))
+                    //{
+                    //    return NotFound();
+                    //}
+                    //else
+                    //{
+                    //    throw;
+                    //}
                 }
                 return RedirectToAction(nameof(Index));
             }
@@ -169,6 +179,56 @@ namespace FinalProject.Controllers
         private bool ProductsExists(int id)
         {
             return _context.Products.Any(e => e.id == id);
+        }
+
+        public IActionResult Review(int productId) 
+        {
+                var email = _context.Reviews.Select(e => new { e.ClientEmail, e.ProductID }).Where(e => e.ProductID == productId && e.ClientEmail == User.Identity.Name).FirstOrDefault();
+
+            try
+            {
+                if (User.Identity.Name != email.ClientEmail)
+                {
+                    var r = new Review() { ProductID = productId };
+                    return View(r);
+                }
+                else
+                {
+                    var review = _context.Reviews.Select(e => e).Where(e => e.ProductID == productId);
+                    return View(review);
+                }
+            }
+            catch (Exception)
+            {
+
+                var r = new Review() { ProductID = productId };
+                return View(r);
+            }
+            
+            
+            
+        }
+        [HttpPost]
+        public IActionResult Review(Review review)
+        {
+            _context.Reviews.Add(review);
+            //try
+            //{
+                _context.SaveChanges();
+                return RedirectToAction("index", "home");
+            //}
+            //catch (Exception)
+            //{
+            //    return View("reviewfound");
+                
+            //}
+
+            //return View(review);
+        }
+
+        public IActionResult reviewfound()
+        {
+            return View();
         }
     }
 }

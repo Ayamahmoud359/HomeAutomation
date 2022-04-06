@@ -1,4 +1,6 @@
-﻿using FinalProject.Models;
+﻿using FinalProject.Data;
+using FinalProject.Models;
+using FinalProject.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -12,27 +14,40 @@ namespace FinalProject.Controllers
 {
     public class HomeController : Controller
     {
-        private readonly ILogger<HomeController> _logger;
-
-        public HomeController(ILogger<HomeController> logger)
+        public List<Products> Products;
+        private readonly ApplicationDbContext context;
+        
+        public HomeController(ApplicationDbContext context)
         {
-            _logger = logger;
+            this.context = context;
+            Products = new List<Products> ();
+
+            
         }
         [AllowAnonymous]
-        public IActionResult Index()
+        // GET: Products
+        public ActionResult Index() 
         {
-            return View();
-        }
-        [AllowAnonymous]
-        public IActionResult Privacy()
-        {
-            return View();
+            var model = new MyViewModel();
+            model.Products = context.Products.ToList();
+            model.Teams = context.Teams.ToList();
+            return View(model);
+            
         }
 
-        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-        public IActionResult Error()
-        {
-            return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
-        }
+        //[HttpGet]
+        //public IActionResult ContactUs()
+        //{
+        //    return View();
+        //}
+        //[HttpGet]
+        //public IActionResult SaveContact(ContactUs model)
+        //{
+        //    context.ContactUs.Add(model);
+        //    context.SaveChanges();
+        //    return RedirectToAction("Index");
+        //}
+       
+
     }
 }

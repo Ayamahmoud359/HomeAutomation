@@ -1,4 +1,5 @@
-﻿using FinalProject.Models;
+﻿using FinalProject.Data;
+using FinalProject.Models;
 using FinalProject.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -13,25 +14,99 @@ using System.Threading.Tasks;
 
 namespace FinalProject.Controllers
 {
-    //[Authorize(Roles = "admin")]
+    [Authorize(Roles = "admin")]
     public class AdministrationController : Controller
     {
         private readonly RoleManager<IdentityRole> roleManager;
 
         private readonly UserManager<IdentityUser> userManager;
         private readonly ILogger<AdministrationController> logger ;
+        private readonly SignInManager<IdentityUser> signInManager;
+        private readonly ApplicationDbContext context;
 
         public AdministrationController(RoleManager<IdentityRole> roleManager,UserManager<IdentityUser> userManager,
-            ILogger<AdministrationController> logger
+            ILogger<AdministrationController> logger, SignInManager<IdentityUser> signInManager,ApplicationDbContext context
             )
         {
             this.roleManager = roleManager;
             this.userManager = userManager;
             this.logger = logger;
+            this.signInManager = signInManager;
+            this.context = context;
         }
         public IActionResult home()
         {
             return View();
+        }
+        [HttpGet]
+        [AllowAnonymous]
+        public IActionResult CreateUser()
+        {
+            return View();
+        }
+        //[HttpGet]
+        //[AllowAnonymous]
+        //public IActionResult ForgotPassword()
+        //{
+        //    return View();
+        //}
+        [HttpPost]
+        [AllowAnonymous]
+
+        public async Task<IActionResult> Logout()
+        {
+            await signInManager.SignOutAsync();
+            return RedirectToAction("index", "home");
+        }
+        [HttpPost]
+        [AllowAnonymous]
+        public async Task<IActionResult> CreateUser(RegisterViewModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                // Copy data from RegisterViewModel to IdentityUser
+                var user = new IdentityUser
+                {
+                    Email = model.Email,
+                    UserName = model.Email,
+                    PhoneNumber = model.Phone
+
+                };
+
+                // Store user data in AspNetUsers database table
+                var result = await userManager.CreateAsync(user, model.Password);
+
+                // If user is successfully created, sign-in the user using
+                // SignInManager and redirect to index action of HomeController
+                if (result.Succeeded)
+                {
+
+                    //var token = await userManager.GenerateEmailConfirmationTokenAsync(user);
+                    //var confirmationLink = Url.Action("ConfirmEmail", "Account",new { userId = user.Id, token = token }, Request.Scheme);
+                    //logger.Log(LogLevel.Warning, confirmationLink);
+                    // If the user is signed in and in the Admin role, then it is
+                    // the Admin user that is creating a new user. So redirect the
+                    // Admin user to ListRoles action
+                    if (signInManager.IsSignedIn(User) && User.IsInRole("admin"))
+                    {
+                        return RedirectToAction("ListUsers", "Administration");
+                    }
+                    await signInManager.SignInAsync(user, isPersistent: false);
+                    return RedirectToAction("index", "home");
+                    //ViewBag.ErrorTitle = "Registration successful";
+                    //ViewBag.ErrorMessage = "Before you can Login, please confirm your " +
+                    //        "email, by clicking on the confirmation link we have emailed you";
+                    //return View("Error");
+                }
+                // If there are any errors, add them to the ModelState object
+                // which will be displayed by the validation summary tag helper
+                foreach (var error in result.Errors)
+                {
+                    ModelState.AddModelError(string.Empty, error.Description);
+                }
+            }
+
+            return View(model);
         }
         public IActionResult index()
         {
@@ -290,7 +365,7 @@ namespace FinalProject.Controllers
             return RedirectToAction("EditRole", new { Id = roleId });
         }
 
-        [HttpPost]
+        [HttpGet]
         public async Task<IActionResult> DeleteUser(string id)
         {
             var user = await userManager.FindByIdAsync(id);
@@ -318,8 +393,8 @@ namespace FinalProject.Controllers
             }
         }
 
-        [HttpPost]
-        [Authorize(Policy = "DeleteRolePolicy")]
+        [HttpGet]
+        //[Authorize(Policy = "DeleteRolePolicy")]
         public async Task<IActionResult> DeleteRole(string id)
         {
             var role = await roleManager.FindByIdAsync(id);
@@ -511,6 +586,18 @@ namespace FinalProject.Controllers
 
             return RedirectToAction("EditUser", new { Id = model.UserId });
 
+        }
+        public IActionResult Messages()
+        {
+
+            return View(context.ContactUs.ToList());
+        }
+        public IActionResult DeleteMessage(int id)
+        {
+            var message = context.ContactUs.Find(id);
+            context.Remove(message);
+            context.SaveChanges();
+            return RedirectToAction("Messages");
         }
     }
 }

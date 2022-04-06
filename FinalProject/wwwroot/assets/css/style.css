@@ -100,18 +100,18 @@ h1, h2, h3, h4, h5, h6 {
   border: 0;
   box-shadow: 0 5px 30px 0 rgba(82, 63, 105, 0.2);
 }
-.dropdown-menu .dropdown-header, .dropdown-menu .dropdown-footer {
+.dropdown-menu .dropdown-header, .dropdown-menu /*.dropdown-footer*/ {
   text-align: center;
   font-size: 15px;
   padding: 10px 25px;
 }
-.dropdown-menu .dropdown-footer a {
+.dropdown-menu /*.dropdown-footer a*/ {
   color: #444444;
   text-decoration: underline;
 }
-.dropdown-menu .dropdown-footer a:hover {
+/*.dropdown-menu .dropdown-footer a:hover {
   text-decoration: none;
-}
+}*/
 .dropdown-menu .dropdown-divider {
   color: #a5c5fe;
   margin: 0;
@@ -210,7 +210,7 @@ h1, h2, h3, h4, h5, h6 {
   box-shadow: 0px 0 30px rgba(1, 41, 112, 0.1);
 }
 
-.card-header, .card-footer {
+.card-header/*, .card-footer*/ {
   border-color: #ebeef4;
   background-color: #fff;
   color: #798eb3;
@@ -551,7 +551,7 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 @media (min-width: 1200px) {
-  #main, #footer {
+  #main/*, #footer */{
     margin-left: 300px;
   }
 }
@@ -561,7 +561,7 @@ h1, h2, h3, h4, h5, h6 {
   }
 }
 @media (min-width: 1200px) {
-  .toggle-sidebar #main, .toggle-sidebar #footer {
+  .toggle-sidebar #main/*, .toggle-sidebar #footer*/ {
     margin-left: 0;
   }
   .toggle-sidebar .sidebar {
@@ -1054,7 +1054,7 @@ h1, h2, h3, h4, h5, h6 {
 /*--------------------------------------------------------------
 # Footer
 --------------------------------------------------------------*/
-.footer {
+/*.footer {
   padding: 20px 0;
   font-size: 14px;
   transition: all 0.3s;
@@ -1069,4 +1069,4 @@ h1, h2, h3, h4, h5, h6 {
   text-align: center;
   font-size: 13px;
   color: #012970;
-}
+}*/

@@ -1,4 +1,5 @@
-﻿using FinalProject.ViewModels;
+﻿using FinalProject.Data;
+using FinalProject.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -17,13 +18,15 @@ namespace FinalProject.Controllers
         private readonly UserManager<IdentityUser> userManager;
         private readonly SignInManager<IdentityUser> signInManager;
         private readonly ILogger<AccountController> logger;
+        private readonly ApplicationDbContext Context;
 
         public AccountController(UserManager<IdentityUser> userManager,
-            SignInManager<IdentityUser> signInManager, ILogger<AccountController> logger)
+            SignInManager<IdentityUser> signInManager, ILogger<AccountController> logger,ApplicationDbContext Context)
         {
             this.userManager = userManager;
             this.signInManager = signInManager;
             this.logger = logger;
+            this.Context = Context;
         }
 
         [HttpGet]
@@ -48,9 +51,9 @@ namespace FinalProject.Controllers
                 // Copy data from RegisterViewModel to IdentityUser
                 var user = new IdentityUser
                 {
-                    UserName = model.UserName,
-                    Email = model.Email
-                    ,PhoneNumber=model.Phone
+                    Email = model.Email,
+                    UserName = model.Email,
+                    PhoneNumber=model.Phone
                     
                 };
 
@@ -229,7 +232,22 @@ namespace FinalProject.Controllers
 
                 return View("Error");
             }
+
         }
+
+        public async Task<IActionResult> AccountInformation(string Id)
+        {
+            var account = await userManager.FindByIdAsync(Id);
+            return View(account);
+        }
+        public async Task<IActionResult> userproducts(string id)
+        {
+            var account = await userManager.FindByIdAsync(id);
+            string Useremail = account.Email;
+            var userorder = Context.orders.Select(e => e).Where(e => e.UserEmail == Useremail).ToList();
+            return View(userorder);
+        }
+
 
     }
 }
