@@ -3,10 +3,9 @@
 @{ 
     ViewData["Title"] = "Index";
 }
+<br />
 
-<h1>Index</h1>
-
-<h4>ShoppingCartViewModel</h4>
+<h4>Shopping Cart</h4>
 <hr />
 <table class="table table-bordered table-striped table-dark">
     <thead>
@@ -27,16 +26,16 @@
             <td class="text-left"><a asp-controller="ShoppingCart" asp-action="AddToShoppingCart" asp-route-productId="@item.Product.id" alt="">Increase Amount</a></td>
             <td class="text-center">@item.Amount</td>
             <td class="text-left">@item.Product.Name</td>
-            <td class="text-right">@item.Product.price.ToString("c")</td>
+            <td class="text-right">@item.Product.price.ToString("")LE</td>
             <td class="text-right">
-                @((item.Amount * item.Product.price).ToString("c"))
+                @((item.Amount * item.Product.price).ToString(""))LE
             </td>
         </tr>}
     </tbody>
     <tfoot>
         <tr>
             <td colspan="5" class="text-right">Total</td>
-            <td class="text-right">@Model.ShoppingCartTotal.ToString("c")</td>
+            <td class="text-right">@Model.ShoppingCartTotal.ToString("")LE</td>
         </tr>
     </tfoot>
 </table>
@@ -44,5 +43,5 @@
 <div class="text-right">
     <a class="btn btn-primary" asp-controller="ShoppingCart" asp-action="ClearCart">Clear Cart</a>
     <a class="btn btn-primary" asp-controller="Order" asp-action="CheckOut">Check Out</a>
-    <a class="btn btn-primary" asp-controller="Products" asp-action="Index">Continue Shopping</a>
+    <a class="btn btn-primary" asp-controller="home" asp-action="Index">Continue Shopping</a>
 </div>

@@ -46,15 +46,12 @@
                     </div>
                 </div>
             </div>
-            <div class="addToCart">
-                <p class="button">
-                    <a class="btn btn-primary" asp-controller="ShoppingCart" asp-action="AddToShoppingCart" asp-route-productId="@Model.id">
-                        Add to Cart
-                    </a>
-                </p>
-            </div>
-            <a class="btn btn-primary" asp-controller="products" asp-action="review" asp-route-productId="@Model.id">
-                AReview this product
+            
+            <a style="width:30%;margin-right:30px"  class="btn btn-primary" asp-controller="ShoppingCart" asp-action="AddToShoppingCart" asp-route-productId="@Model.id">
+                Add to Cart
+            </a>
+            <a style="width:30%" class="btn btn-primary" asp-controller="products" asp-action="review" asp-route-productId="@Model.id">
+                Review this product
             </a>
 
         </div>
